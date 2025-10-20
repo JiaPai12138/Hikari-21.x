@@ -116,12 +116,13 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-llvm
+          name: ollvm-files
           path: install/
 
       - name: Package llvm
+        if: github.event_name == 'release'
         run: |
-          7z a -t7z -mmt -mf -mhc -mhcf -m0=LZMA2 -mx=3 windows-llvm.7z `
+          7z a -t7z -mmt -mf -mhc -mhcf -m0=LZMA2 -mx=3 Hikari_ollvm_21r.7z `
             install/bin/clang.exe `
             install/bin/clang-cl.exe `
             install/bin/clang-cpp.exe `
@@ -144,6 +145,6 @@ jobs:
           name: ${{ github.event.release.name }}
           draft: false
           prerelease: false
-          files: Hikari_ollvm_21.7z
+          files: Hikari_ollvm_21r.7z
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
