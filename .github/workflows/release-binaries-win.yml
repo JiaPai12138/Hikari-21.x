@@ -1,0 +1,149 @@
+name: ollvm-build
+
+permissions:
+  contents: write
+
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+
+jobs:
+  build:
+    timeout-minutes: 150
+
+    runs-on: windows-latest
+
+    env:
+      BUILD_TYPE: Release
+
+    steps:
+      - name: Set CORES
+        run: echo "CORES=$env:NUMBER_OF_PROCESSORS" >> $env:GITHUB_ENV
+
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Check robocopy path
+        run: where robocopy
+
+      - name: Get latest LLVM 21.x non-rc tag
+        id: get_tag
+        shell: pwsh
+        run: |
+          $tagsJson = Invoke-RestMethod -Uri "https://api.github.com/repos/llvm/llvm-project/tags?per_page=10"
+          $tags = $tagsJson.name
+
+          $filtered = $tags | Where-Object { $_ -match '^llvmorg-21' -and $_ -notmatch '-rc' }
+          $sorted = $filtered | Sort-Object { ($_ -replace '^llvmorg-','') } -Unique
+          $latest = $sorted[-1]
+
+          Write-Host "Latest tag is $latest"
+          echo "tag=$latest" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Download and extract LLVM source
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.get_tag.outputs.tag }}"
+          $url = "https://github.com/llvm/llvm-project/archive/refs/tags/$tag.zip"
+          Write-Host "Downloading $url"
+
+          $zipFile = "llvm.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zipFile
+
+          $topDir = & 7z l $zipFile |
+            ForEach-Object { ($_ -split '\s{2,}')[-1] } |
+            Where-Object { $_ -like "llvm-project*\*" } |
+            Select-Object -First 1 |
+            ForEach-Object { ($_ -split '\\')[0] }
+
+          Write-Host "Extracting $zipFile...$topDir"
+          7z x $zipFile -aos -snld
+
+          robocopy "$topDir" "." /E /MOV /XC /XN /XO /R:0 /W:0 /NFL /NDL /NJH /NJS /NC /NS /NP
+
+          Remove-Item $zipFile
+          Remove-Item -Path $topDir -Recurse -Force
+          Write-Host "TopDir full path: $topDir"
+
+          exit 0
+
+      - name: Install sccache
+        run: choco install sccache -y
+
+      - name: Check Ninja version
+        run: ninja --version
+
+      - name: Check clang-cl version
+        run: clang-cl --version
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build llvm
+        shell: cmd
+        run: |
+          call "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake -Bbuild -G Ninja ^
+          -DLLVM_ENABLE_RPMALLOC=OFF ^
+          -DLLVM_TOOL_LLVM_SHLIB_BUILD=OFF ^
+          -DLLVM_INCLUDE_TESTS=OFF ^
+          -DLLVM_INCLUDE_TOOLS=ON ^
+          -DLLVM_INCLUDE_EXAMPLES=OFF ^
+          -DLLDB_ENABLE_PYTHON=OFF ^
+          -DLLVM_ENABLE_LIBXML2=OFF ^
+          -DLLVM_ENABLE_ZLIB=OFF ^
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} ^
+          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ^
+          -DLLVM_OBFUSCATION_LINK_INTO_TOOLS=ON ^
+          -DCMAKE_INSTALL_PREFIX=install ^
+          -DLLVM_TARGETS_TO_BUILD="X86" ^
+          -DLLVM_ENABLE_PROJECTS="clang;lld" ^
+          -DCMAKE_C_COMPILER=clang-cl ^
+          -DCMAKE_CXX_COMPILER=clang-cl ^
+          -DCMAKE_C_COMPILER_LAUNCHER=sccache ^
+          -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+          -DCMAKE_CXX_FLAGS="/utf-8" ^
+          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ^
+          llvm
+          cmake --build build --config ${{ env.BUILD_TYPE }} --target install --verbose -j ${{ env.CORES }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-llvm
+          path: install/
+
+      - name: Package llvm
+        run: |
+          7z a -t7z -mmt -mf -mhc -mhcf -m0=LZMA2 -mx=3 windows-llvm.7z `
+            install/bin/clang.exe `
+            install/bin/clang-cl.exe `
+            install/bin/clang-cpp.exe `
+            install/bin/clang-format.exe `
+            install/bin/clang++.exe `
+            install/bin/lld.exe `
+            install/bin/lld-link.exe `
+            install/bin/llvm-ar.exe `
+            install/bin/llvm-lib.exe `
+            install/bin/llvm-nm.exe `
+            install/bin/llvm-objdump.exe `
+            install/bin/llvm-readobj.exe `
+            install/bin/llvm-strip.exe
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'release'
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          name: ${{ github.event.release.name }}
+          draft: false
+          prerelease: false
+          files: Hikari_ollvm_21.7z
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
