@@ -16,7 +16,6 @@
 using namespace llvm;
 namespace {
 struct IndirectGlobalVariable : public FunctionPass {
-  unsigned pointerSize;
   static char ID;
   ObfuscationOptions *ArgsOptions;
 
@@ -30,8 +29,7 @@ struct IndirectGlobalVariable : public FunctionPass {
   CryptoUtils RandomEngine;
   bool RunOnFuncChanged = false;
 
-  IndirectGlobalVariable(unsigned pointerSize, ObfuscationOptions *argsOptions) : FunctionPass(ID) {
-    this->pointerSize = pointerSize;
+  IndirectGlobalVariable(ObfuscationOptions *argsOptions) : FunctionPass(ID) {
     this->ArgsOptions = argsOptions;
   }
 
@@ -195,8 +193,8 @@ struct IndirectGlobalVariable : public FunctionPass {
 } // namespace llvm
 
 char IndirectGlobalVariable::ID = 0;
-FunctionPass *llvm::createIndirectGlobalVariablePass(unsigned pointerSize, ObfuscationOptions *argsOptions) {
-  return new IndirectGlobalVariable(pointerSize, argsOptions);
+FunctionPass *llvm::createIndirectGlobalVariablePass(ObfuscationOptions *argsOptions) {
+  return new IndirectGlobalVariable(argsOptions);
 }
 
 INITIALIZE_PASS(IndirectGlobalVariable, "indgv", "Enable IR Indirect Global Variable Obfuscation", false, false)

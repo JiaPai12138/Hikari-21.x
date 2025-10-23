@@ -7,7 +7,7 @@ class FunctionPass;
 class PassRegistry;
 class ObfuscationOptions;
 
-FunctionPass* createIndirectGlobalVariablePass(unsigned pointerSize, ObfuscationOptions *argsOptions);
+FunctionPass* createIndirectGlobalVariablePass(ObfuscationOptions *argsOptions);
 void initializeIndirectGlobalVariablePass(PassRegistry &Registry);
 
 }

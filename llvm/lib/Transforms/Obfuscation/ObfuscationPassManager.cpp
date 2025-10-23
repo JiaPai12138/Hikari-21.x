@@ -183,7 +183,7 @@ struct ObfuscationPassManager : public ModulePass {
 
     add(llvm::createConstantIntEncryptionPass(Options.get()));
 
-    add(llvm::createIndirectGlobalVariablePass(pointerSize, Options.get()));
+    add(llvm::createIndirectGlobalVariablePass(Options.get()));
 
     add(llvm::createConstantFPEncryptionPass(Options.get()));
 
@@ -191,9 +191,9 @@ struct ObfuscationPassManager : public ModulePass {
       add(llvm::createStringEncryptionPass(Options.get()));
     }
 
-    add(llvm::createIndirectCallPass(pointerSize, Options.get()));
+    add(llvm::createIndirectCallPass(Options.get()));
     add(llvm::createFlatteningPass(pointerSize, Options.get()));
-    add(llvm::createIndirectBranchPass(pointerSize, Options.get()));
+    add(llvm::createIndirectBranchPass(Options.get()));
 
     if (EnableRttiEraser || Options->rttiOpt()->isEnabled()) {
       add(llvm::createMsRttiEraserPass(Options.get()));

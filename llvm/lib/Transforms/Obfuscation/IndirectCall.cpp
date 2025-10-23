@@ -17,7 +17,6 @@ using namespace llvm;
 namespace {
 struct IndirectCall : public FunctionPass {
   static char ID;
-  unsigned pointerSize;
   ObfuscationOptions *ArgsOptions;
 
   std::unordered_map<Function *, std::set<CallInst *>> FunctionCallSites;
@@ -33,8 +32,7 @@ struct IndirectCall : public FunctionPass {
   CryptoUtils RandomEngine;
   bool RunOnFuncChanged = false;
 
-  IndirectCall(unsigned pointerSize, ObfuscationOptions *argsOptions) : FunctionPass(ID) {
-    this->pointerSize = pointerSize;
+  IndirectCall(ObfuscationOptions *argsOptions) : FunctionPass(ID) {
     this->ArgsOptions = argsOptions;
   }
 
@@ -193,8 +191,8 @@ struct IndirectCall : public FunctionPass {
 } // namespace llvm
 
 char IndirectCall::ID = 0;
-FunctionPass *llvm::createIndirectCallPass(unsigned pointerSize, ObfuscationOptions *argsOptions) {
-  return new IndirectCall(pointerSize, argsOptions);
+FunctionPass *llvm::createIndirectCallPass(ObfuscationOptions *argsOptions) {
+  return new IndirectCall(argsOptions);
 }
 
 INITIALIZE_PASS(IndirectCall, "icall", "Enable IR Indirect Call Obfuscation", false, false)

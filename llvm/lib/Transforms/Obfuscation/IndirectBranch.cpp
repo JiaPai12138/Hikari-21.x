@@ -16,7 +16,6 @@
 using namespace llvm;
 namespace {
 struct IndirectBranch : public FunctionPass {
-  unsigned pointerSize;
   static char ID;
   ObfuscationOptions *ArgsOptions;
 
@@ -31,8 +30,7 @@ struct IndirectBranch : public FunctionPass {
   CryptoUtils RandomEngine;
   bool RunOnFuncChanged = false;
 
-  IndirectBranch(unsigned pointerSize, ObfuscationOptions *argsOptions) : FunctionPass(ID) {
-    this->pointerSize = pointerSize;
+  IndirectBranch(ObfuscationOptions *argsOptions) : FunctionPass(ID) {
     this->ArgsOptions = argsOptions;
   }
 
@@ -201,7 +199,7 @@ struct IndirectBranch : public FunctionPass {
 } // namespace llvm
 
 char IndirectBranch::ID = 0;
-FunctionPass *llvm::createIndirectBranchPass(unsigned pointerSize, ObfuscationOptions *argsOptions) {
-  return new IndirectBranch(pointerSize, argsOptions);
+FunctionPass *llvm::createIndirectBranchPass(ObfuscationOptions *argsOptions) {
+  return new IndirectBranch(argsOptions);
 }
 INITIALIZE_PASS(IndirectBranch, "indbr", "Enable IR Indirect Branch Obfuscation", false, false)

@@ -7,7 +7,7 @@ class FunctionPass;
 class PassRegistry;
 class ObfuscationOptions;
 
-FunctionPass* createIndirectCallPass(unsigned pointerSize, ObfuscationOptions *argsOptions);
+FunctionPass* createIndirectCallPass(ObfuscationOptions *argsOptions);
 void initializeIndirectCallPass(PassRegistry &Registry);
 
 }
