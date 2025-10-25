@@ -8,6 +8,7 @@
 #include "llvm/Transforms/Obfuscation/StringEncryption.h"
 #include "llvm/Transforms/Obfuscation/ConstantIntEncryption.h"
 #include "llvm/Transforms/Obfuscation/ConstantFPEncryption.h"
+#include "llvm/Transforms/Obfuscation/SplitBasicBlock.h"
 #include "llvm/Transforms/Obfuscation/MicrosoftRTTIEraser.h"
 #include "llvm/Passes/PassBuilder.h"
 
@@ -32,7 +33,7 @@ public:
     }
     return PreservedAnalyses::all();
   }
-  
+
   static llvm::StringRef name() {
     return "ObfuscationPassManagerPass";
   }

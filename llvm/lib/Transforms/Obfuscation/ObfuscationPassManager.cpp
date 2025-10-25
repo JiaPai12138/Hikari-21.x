@@ -162,7 +162,7 @@ struct ObfuscationPassManager : public ModulePass {
     auto Opt = ObfuscationOptions::readConfigFile(ArkariConfigPath);
 
     Opt->indBrOpt()->readOpt(EnableIndirectBr, LevelIndirectBr);
-    Opt->blockOpt()->readOpt(EnableSplitBlock, LevelSplitBlock);
+    Opt->splitOpt()->readOpt(EnableSplitBlock, LevelSplitBlock);
     Opt->iCallOpt()->readOpt(EnableIndirectCall, LevelIndirectCall);
     Opt->indGvOpt()->readOpt(EnableIndirectGV, LevelIndirectGV);
     Opt->flaOpt()->readOpt(EnableIRFlattening);

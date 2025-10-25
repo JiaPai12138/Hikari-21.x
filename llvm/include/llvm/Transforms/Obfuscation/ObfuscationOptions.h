@@ -76,7 +76,7 @@ protected:
   std::shared_ptr<ObfOpt> ICallOpt = nullptr;
   std::shared_ptr<ObfOpt> IndGvOpt = nullptr;
   std::shared_ptr<ObfOpt> FlaOpt = nullptr;
-  std::shared_ptr<ObfOpt> BlockOpt = nullptr;
+  std::shared_ptr<ObfOpt> SplitOpt = nullptr;
   std::shared_ptr<ObfOpt> CseOpt = nullptr;
   std::shared_ptr<ObfOpt> CieOpt = nullptr;
   std::shared_ptr<ObfOpt> CfeOpt = nullptr;
@@ -91,7 +91,7 @@ public:
     allOpt.push_back(ICallOpt);
     allOpt.push_back(IndGvOpt);
     allOpt.push_back(FlaOpt);
-    allOpt.push_back(BlockOpt);
+    allOpt.push_back(SplitOpt);
     allOpt.push_back(CseOpt);
     allOpt.push_back(CieOpt);
     allOpt.push_back(CfeOpt);
@@ -112,7 +112,7 @@ public:
     this->ICallOpt = iCallOpt;
     this->IndGvOpt = indGvOpt;
     this->FlaOpt = flaOpt;
-    this->BlockOpt = blockOpt;
+    this->SplitOpt = blockOpt;
     this->CseOpt = cseOpt;
     this->CieOpt = cieOpt;
     this->CfeOpt = cfeOpt;
@@ -147,8 +147,8 @@ public:
     return FlaOpt;
   }
 
-  auto blockOpt() const {
-    return BlockOpt;
+  auto splitOpt() const {
+    return SplitOpt;
   }
 
   auto cseOpt() const {

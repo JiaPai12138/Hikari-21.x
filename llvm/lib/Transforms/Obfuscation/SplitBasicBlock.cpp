@@ -3,6 +3,7 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/Transforms/Obfuscation/ObfuscationOptions.h"
 #include "llvm/Transforms/Obfuscation/Utils.h"
+#include "llvm/Transforms/Obfuscation/SplitBasicBlock.h"
 #include "llvm/CryptoUtils.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/raw_ostream.h"
@@ -16,23 +17,23 @@ using namespace llvm;
 
 namespace {
 
-struct SplitBasicBlockPass : public FunctionPass {
+struct SplitBasicBlock : public FunctionPass {
   static char ID;
   ObfuscationOptions *ArgsOptions;
   CryptoUtils RandomEngine;
   bool Changed = false;
 
-  SplitBasicBlockPass(ObfuscationOptions *argsOptions)
+  SplitBasicBlock(ObfuscationOptions *argsOptions)
     : FunctionPass(ID), ArgsOptions(argsOptions) {}
 
-  StringRef getPassName() const override { return "SplitBasicBlockPass"; }
+  StringRef getPassName() const override { return "SplitBasicBlock"; }
 
   bool runOnFunction(Function &F) override {
     auto opt = ArgsOptions->toObfuscate(ArgsOptions->splitOpt(), &F);
     if (!opt.isEnabled())
       return false;
 
-    int splitNum = std::max(1, opt.level() ? opt.level() : 3);
+    int splitNum = std::max<int>(1, opt.level() ? opt.level() : 3);
     splitFunction(F, splitNum);
     return Changed;
   }
@@ -90,11 +91,11 @@ struct SplitBasicBlockPass : public FunctionPass {
 
 } // namespace
 
-char SplitBasicBlockPass::ID = 0;
+char SplitBasicBlock::ID = 0;
 
 FunctionPass *llvm::createSplitBasicBlockPass(ObfuscationOptions *argsOptions) {
-  return new SplitBasicBlockPass(argsOptions);
+  return new SplitBasicBlock(argsOptions);
 }
 
-INITIALIZE_PASS(SplitBasicBlockPass, "split",
+INITIALIZE_PASS(SplitBasicBlock, "split",
                 "Split Basic Block Obfuscation Pass", false, false)
