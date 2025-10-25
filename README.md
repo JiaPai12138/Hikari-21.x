@@ -1,25 +1,29 @@
-
 <h1 align="center">KomiMoe/Hikari</h1>
 <h2 align="center">曾用名: Arkari (请给我点小星星和打钱) </h2>
 
 <h3 align="center">
-  <a href="https://discord.gg/f5nDYjsrKZ">Discord群组:
-  <img width="180" src="https://discordapp.com/api/guilds/1391744742148145294/widget.png" />
- </a>
+  <a href="https://discord.gg/f5nDYjsrKZ">
+    <img src="https://img.shields.io/badge/Discord-加入群组-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="加入Discord群组" />
+  </a>
 </h3>
 
 <p align="center">
  <a href="https://github.com/KomiMoe/Hikari/issues">
-  <img src="https://img.shields.io/github/issues/KomiMoe/Hikari"/>
+  <img src="https://img.shields.io/github/issues/KomiMoe/Hikari"/> 
  </a>
  <a href="https://github.com/KomiMoe/Hikari/network/members">
-  <img src="https://img.shields.io/github/forks/KomiMoe/Hikari"/>
- </a>
+  <img src="https://img.shields.io/github/forks/KomiMoe/Hikari"/> 
+ </a>  
  <a href="https://github.com/KomiMoe/Hikari/stargazers">
-  <img src="https://img.shields.io/github/stars/KomiMoe/Hikari"/>
+  <img src="https://img.shields.io/github/stars/KomiMoe/Hikari"/> 
  </a>
  <a href="https://github.com/KomiMoe/Hikari/LICENSE">
-  <img src="https://img.shields.io/github/license/KomiMoe/Hikari?"/>
+  <img src="https://img.shields.io/github/license/KomiMoe/Hikari?"/> 
+ </a>
+</p>
+<p align="center">
+ <a href="./README_en.md">
+  <img src="https://img.shields.io/badge/README-English-blue.svg" alt="Read in English"/>
  </a>
 </p>
 <h3 align="center">Yet another llvm based obfuscator based on goron</h3>
@@ -168,7 +172,7 @@ int fool(auto a, auto b){
 1.通过**annotate**对特定函数指定混淆强度：
 
  `^flag=1` 表示当前函数设置某功能强度等级(此处为1)
-
+ 
 ```cpp
 //^icall=表示指定icall的强度
 //+icall表示当前函数启用icall混淆, 如果你在命令行中启用了icall则无需添加+icall
@@ -188,7 +192,7 @@ Eg.间接函数调用,并加密目标函数地址,强度设置为3(`-mllvm -irob
 ## 通过配置文件管理混淆参数
 (Win64-MT-20.1.7-obf1.7.0 or later)
 
-编译参数加上：`-mllvm -hikari-cfg="配置文件路径|Your config path"`
+编译参数加上：`-mllvm -hikari-cfg="配置文件路径|Your config path"` 
 
 路径可以是绝对路径，或者相对于编译器工作目录的相对路径
 

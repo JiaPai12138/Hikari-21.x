@@ -18,6 +18,16 @@ EnableIRObfuscation("irobf", cl::init(false), cl::NotHidden,
 
 
 static cl::opt<bool>
+EnableSplitBlock("irobf-split", cl::init(false), cl::NotHidden,
+                 cl::desc("Split Basic Block Obfuscation Pass."),
+                 cl::ZeroOrMore);
+static cl::opt<uint32_t>
+LevelSplitBlock("level-split", cl::init(3), cl::NotHidden,
+                cl::desc("Set Split Basic Block Obfuscation Number."),
+                cl::ZeroOrMore);
+
+
+static cl::opt<bool>
 EnableIndirectBr("irobf-indbr", cl::init(false), cl::NotHidden,
                  cl::desc("Enable IR Indirect Branch Obfuscation."),
                  cl::ZeroOrMore);
@@ -95,7 +105,7 @@ namespace llvm {
 
 struct ObfuscationPassManager : public ModulePass {
   static char            ID; // Pass identification
-  SmallVector<Pass *, 8> Passes;
+  SmallVector<Pass *, 9> Passes;
 
   ObfuscationPassManager() : ModulePass(ID) {
     initializeObfuscationPassManagerPass(*PassRegistry::getPassRegistry());
@@ -152,6 +162,7 @@ struct ObfuscationPassManager : public ModulePass {
     auto Opt = ObfuscationOptions::readConfigFile(ArkariConfigPath);
 
     Opt->indBrOpt()->readOpt(EnableIndirectBr, LevelIndirectBr);
+    Opt->blockOpt()->readOpt(EnableSplitBlock, LevelSplitBlock);
     Opt->iCallOpt()->readOpt(EnableIndirectCall, LevelIndirectCall);
     Opt->indGvOpt()->readOpt(EnableIndirectGV, LevelIndirectGV);
     Opt->flaOpt()->readOpt(EnableIRFlattening);
@@ -166,7 +177,7 @@ struct ObfuscationPassManager : public ModulePass {
 
   bool runOnModule(Module &M) override {
 
-    if (EnableIndirectBr || EnableIndirectCall || EnableIndirectGV ||
+    if (EnableIndirectBr || EnableSplitBlock || EnableIndirectCall || EnableIndirectGV ||
         EnableIRFlattening || EnableIRStringEncryption ||
         EnableIRConstantIntEncryption || EnableIRConstantFPEncryption ||
         EnableRttiEraser || !ArkariConfigPath.empty()) {
@@ -194,6 +205,7 @@ struct ObfuscationPassManager : public ModulePass {
     add(llvm::createIndirectCallPass(Options.get()));
     add(llvm::createFlatteningPass(pointerSize, Options.get()));
     add(llvm::createIndirectBranchPass(Options.get()));
+    add(llvm::createSplitBasicBlockPass(Options.get()));
 
     if (EnableRttiEraser || Options->rttiOpt()->isEnabled()) {
       add(llvm::createMsRttiEraserPass(Options.get()));
