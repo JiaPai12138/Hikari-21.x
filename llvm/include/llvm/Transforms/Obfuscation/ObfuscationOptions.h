@@ -103,7 +103,7 @@ public:
                      const std::shared_ptr<ObfOpt> &iCallOpt,
                      const std::shared_ptr<ObfOpt> &indGvOpt,
                      const std::shared_ptr<ObfOpt> &flaOpt,
-                     const std::shared_ptr<ObfOpt> &blockOpt,
+                     const std::shared_ptr<ObfOpt> &splitOpt,
                      const std::shared_ptr<ObfOpt> &cseOpt,
                      const std::shared_ptr<ObfOpt> &cieOpt,
                      const std::shared_ptr<ObfOpt> &cfeOpt,
@@ -112,7 +112,7 @@ public:
     this->ICallOpt = iCallOpt;
     this->IndGvOpt = indGvOpt;
     this->FlaOpt = flaOpt;
-    this->SplitOpt = blockOpt;
+    this->SplitOpt = splitOpt;
     this->CseOpt = cseOpt;
     this->CieOpt = cieOpt;
     this->CfeOpt = cfeOpt;

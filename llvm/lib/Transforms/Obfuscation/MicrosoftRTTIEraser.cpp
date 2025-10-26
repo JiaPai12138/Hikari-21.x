@@ -11,7 +11,6 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/CryptoUtils.h"
 #include "llvm/ADT/SmallString.h"
-#include "llvm/CryptoUtils.h"
 #include "llvm/Transforms/Obfuscation/MicrosoftRTTIEraser.h"
 
 #define DEBUG_TYPE "ms_rtti_eraser"
