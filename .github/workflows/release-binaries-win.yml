@@ -135,7 +135,8 @@ jobs:
             install/bin/llvm-nm.exe `
             install/bin/llvm-objdump.exe `
             install/bin/llvm-readobj.exe `
-            install/bin/llvm-strip.exe
+            install/bin/llvm-strip.exe `
+            clang/lib/Headers
 
       - name: Release
         uses: softprops/action-gh-release@v2
