@@ -58,7 +58,7 @@ static cl::opt<uint32_t> LevelIndirectGV(
 
 
 static cl::opt<bool> EnableIRFlattening(
-    "irobf-cff", cl::init(false), cl::NotHidden,
+    "irobf-fla", cl::init(false), cl::NotHidden,
     cl::desc("Enable IR Control Flow Flattening Obfuscation."), cl::ZeroOrMore);
 
 
@@ -97,8 +97,8 @@ EnableRttiEraser("irobf-rtti", cl::init(false), cl::NotHidden,
 
 
 static cl::opt<std::string>
-ArkariConfigPath("arkari-cfg", cl::init(std::string{}), cl::NotHidden,
-                 cl::desc("Arkari config path."),
+HikariConfigPath("hikari-cfg", cl::init(std::string{}), cl::NotHidden,
+                 cl::desc("Hikari config path."),
                  cl::ZeroOrMore);
 
 namespace llvm {
@@ -159,7 +159,7 @@ struct ObfuscationPassManager : public ModulePass {
   }
 
   static std::shared_ptr<ObfuscationOptions> getOptions() {
-    auto Opt = ObfuscationOptions::readConfigFile(ArkariConfigPath);
+    auto Opt = ObfuscationOptions::readConfigFile(HikariConfigPath);
 
     Opt->indBrOpt()->readOpt(EnableIndirectBr, LevelIndirectBr);
     Opt->splitOpt()->readOpt(EnableSplitBlock, LevelSplitBlock);
@@ -180,7 +180,7 @@ struct ObfuscationPassManager : public ModulePass {
     if (EnableIndirectBr || EnableSplitBlock || EnableIndirectCall || EnableIndirectGV ||
         EnableIRFlattening || EnableIRStringEncryption ||
         EnableIRConstantIntEncryption || EnableIRConstantFPEncryption ||
-        EnableRttiEraser || !ArkariConfigPath.empty()) {
+        EnableRttiEraser || !HikariConfigPath.empty()) {
       EnableIRObfuscation = true;
     }
 

@@ -109,7 +109,6 @@ jobs:
           -DCMAKE_C_COMPILER_LAUNCHER=sccache ^
           -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
           -DCMAKE_CXX_FLAGS="/utf-8" ^
-          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded ^
           llvm
           cmake --build build --config ${{ env.BUILD_TYPE }} --target install --verbose -j ${{ env.CORES }}
 
